@@ -26,9 +26,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //get the user input to write to file and send
         mText = enteredText.text.toString()
 
         btnSend.setOnClickListener {
+
+            //checking necessary permissions for writing files to the device storage
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                     val permissions = arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -54,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         when (requestCode) {
             WRITE_EXTERNAL_STORAGE_CODE -> {
+                //checking if user grant permission or not
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     saveToFile(mText)
 
@@ -68,6 +73,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveToFile(myText: String) {
+        //specifying custom format of date to use for files name
         val timeStamp = SimpleDateFormat(
             "yyyyMMdd_HHmmss",
             Locale.ENGLISH
@@ -79,10 +85,13 @@ class MainActivity : AppCompatActivity() {
 
         try {
             val path: File = Environment.getExternalStorageDirectory()
-            val dir = File("$path/Board Menu/")
+            // following line will create a folder named Tcp Test
+            val dir = File("$path/Tcp Test/")
             dir.mkdirs()
+            // declaring file's name
             val fileName = "MyFile_$timeStamp.txt"
             val file = File(dir, fileName)
+            // writing to file
             val fileWriter: FileWriter = FileWriter(file.absoluteFile)
             val bufferedWriter = BufferedWriter(fileWriter)
             bufferedWriter.write("$$myText")
@@ -103,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         override fun doInBackground(vararg params: Void?): Void? {
             var socket: Socket? = null
             try {
+                // you can customize this part and enter your host's ip and port
                 socket = Socket("192.168.1.15", 333)
                 val myByteArray = ByteArray(file.length().toInt())
                 val fis = FileInputStream(file)
